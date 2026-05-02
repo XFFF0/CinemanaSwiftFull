@@ -15,7 +15,7 @@ struct MovieDetailsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .trailing, spacing: 20) {
-                AsyncImage(url: shownMovie.coverURL ?? shownMovie.posterURL) { image in
+                AsyncImage(url: shownMovie.coverURL) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     Color.white.opacity(0.08)
@@ -55,8 +55,12 @@ struct MovieDetailsView: View {
 
                 if vm.isLoading {
                     ProgressView()
-                } else if let error = vm.errorMessage {
-                    Text(error).foregroundStyle(.red)
+                }
+
+                if let error = vm.errorMessage {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.trailing)
                 }
 
                 VStack(spacing: 12) {
@@ -101,6 +105,7 @@ struct MovieDetailsView: View {
 
                     if downloader.isDownloading {
                         ProgressView(value: downloader.progress)
+
                         Text("\(Int(downloader.progress * 100))%")
                             .foregroundStyle(.secondary)
                     }
