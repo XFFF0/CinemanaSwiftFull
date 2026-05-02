@@ -1,0 +1,28 @@
+name: CinemanaSwiftFull
+
+options:
+  bundleIdPrefix: com.alifarhan
+  deploymentTarget:
+    iOS: "16.0"
+  generateEmptyDirectories: true
+
+targets:
+  CinemanaSwiftFull:
+    type: application
+    platform: iOS
+    sources:
+      - CinemanaSwiftFull
+    info:
+      path: CinemanaSwiftFull/Info.plist
+      properties:
+        CFBundleDisplayName: Cinemana
+        CFBundleIdentifier: com.alifarhan.CinemanaSwiftFull
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0.0"
+        UILaunchScreen: {}
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.alifarhan.CinemanaSwiftFull
+      TARGETED_DEVICE_FAMILY: 1
+      CODE_SIGN_STYLE: Manual
