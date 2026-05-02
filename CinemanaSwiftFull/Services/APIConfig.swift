@@ -20,6 +20,10 @@ enum APIConfig {
         endpoint("newlyVideosItems/level/\(level)/offset/\(offset)")
     }
 
+    static func groupVideosURL(groupId: String, level: Int = 0, offset: Int = 0) -> URL {
+        endpoint("videoListPagination/groupID/\(groupId)/level/\(level)/offset/\(offset)")
+    }
+
     static func searchURL(query: String, type: String = "all") -> URL? {
         var components = URLComponents(url: endpoint("AdvancedSearch"), resolvingAgainstBaseURL: false)
         components?.queryItems = [
