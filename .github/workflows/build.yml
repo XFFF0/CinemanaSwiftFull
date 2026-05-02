@@ -1,0 +1,49 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build app
+        run: |
+          xcodebuild \
+            -project CinemanaSwiftFull.xcodeproj \
+            -scheme CinemanaSwiftFull \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Create IPA
+        run: |
+          rm -rf Payload CinemanaSwiftFull.ipa
+          mkdir -p Payload
+          APP_PATH=$(find build -name "*.app" -type d | head -n 1)
+          cp -R "$APP_PATH" Payload/
+          zip -r CinemanaSwiftFull.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: CinemanaSwiftFull-IPA
+          path: CinemanaSwiftFull.ipa
