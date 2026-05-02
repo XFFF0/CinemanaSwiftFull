@@ -16,6 +16,47 @@ final class CinemaService {
         try await APIClient.shared.get([Movie].self, url: APIConfig.latestURL(offset: offset))
     }
 
+    func fetchAllLatest(maxPages: Int = 5) async -> [Movie] {
+        var all: [Movie] = []
+
+        for page in 0..<maxPages {
+            let offset = page * 20
+
+            guard let movies = try? await fetchLatest(offset: offset),
+                  !movies.isEmpty else {
+                break
+            }
+
+            all.append(contentsOf: movies)
+        }
+
+        return all
+    }
+
+    func fetchGroupVideos(groupId: String, offset: Int = 0) async throws -> [Movie] {
+        try await APIClient.shared.get(
+            [Movie].self,
+            url: APIConfig.groupVideosURL(groupId: groupId, offset: offset)
+        )
+    }
+
+    func fetchAllGroupVideos(groupId: String, maxPages: Int = 5) async -> [Movie] {
+        var all: [Movie] = []
+
+        for page in 0..<maxPages {
+            let offset = page * 20
+
+            guard let movies = try? await fetchGroupVideos(groupId: groupId, offset: offset),
+                  !movies.isEmpty else {
+                break
+            }
+
+            all.append(contentsOf: movies)
+        }
+
+        return all
+    }
+
     func search(query: String, type: String = "all") async throws -> [Movie] {
         guard let url = APIConfig.searchURL(query: query, type: type) else {
             throw APIError.invalidURL
