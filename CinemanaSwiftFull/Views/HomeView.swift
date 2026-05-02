@@ -6,15 +6,20 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(red: 0.03, green: 0.05, blue: 0.10).ignoresSafeArea()
+                Color(red: 0.03, green: 0.05, blue: 0.10)
+                    .ignoresSafeArea()
 
                 if vm.isLoading {
                     ProgressView()
                 } else if let error = vm.errorMessage {
                     VStack(spacing: 12) {
-                        Text(error).foregroundStyle(.red)
+                        Text(error)
+                            .foregroundStyle(.red)
+
                         Button("إعادة المحاولة") {
-                            Task { await vm.load() }
+                            Task {
+                                await vm.load()
+                            }
                         }
                     }
                     .padding()
@@ -32,10 +37,11 @@ struct HomeView: View {
 
                             MovieSection(title: "الأحدث", movies: vm.latest)
 
-                            ForEach(vm.groups) { group in
-                                if let movies = group.videos, !movies.isEmpty {
-                                    MovieSection(title: group.title, movies: movies)
-                                }
+                            ForEach(vm.sections) { section in
+                                MovieSection(
+                                    title: section.title,
+                                    movies: section.movies
+                                )
                             }
                         }
                         .padding()
@@ -48,7 +54,7 @@ struct HomeView: View {
             .navigationTitle("سينمانا")
             .navigationBarTitleDisplayMode(.inline)
             .task {
-                if vm.latest.isEmpty {
+                if vm.latest.isEmpty && vm.sections.isEmpty {
                     await vm.load()
                 }
             }
@@ -62,15 +68,25 @@ struct HeroMovieView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             AsyncImage(url: movie.coverURL) { image in
-                image.resizable().scaledToFill()
+                image
+                    .resizable()
+                    .scaledToFill()
             } placeholder: {
-                LinearGradient(colors: [.red.opacity(0.8), .black], startPoint: .topLeading, endPoint: .bottomTrailing)
+                LinearGradient(
+                    colors: [.red.opacity(0.8), .black],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             }
             .frame(height: 240)
             .clipShape(RoundedRectangle(cornerRadius: 24))
             .overlay(
-                LinearGradient(colors: [.clear, .black.opacity(0.85)], startPoint: .top, endPoint: .bottom)
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                LinearGradient(
+                    colors: [.clear, .black.opacity(0.85)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 24))
             )
 
             VStack(alignment: .trailing, spacing: 8) {
@@ -78,6 +94,7 @@ struct HeroMovieView: View {
                     .font(.title.bold())
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.trailing)
+                    .lineLimit(2)
 
                 Text(movie.overview)
                     .font(.caption)
@@ -103,23 +120,26 @@ struct MovieSection: View {
     let movies: [Movie]
 
     var body: some View {
-        VStack(alignment: .trailing, spacing: 12) {
-            HStack {
-                Spacer()
-                Text(title)
-                    .font(.title3.bold())
-                    .foregroundStyle(.white)
-            }
+        if !movies.isEmpty {
+            VStack(alignment: .trailing, spacing: 12) {
+                HStack {
+                    Spacer()
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 14) {
-                    ForEach(movies) { movie in
-                        NavigationLink {
-                            MovieDetailsView(movie: movie)
-                        } label: {
-                            MoviePosterCard(movie: movie)
+                    Text(title)
+                        .font(.title3.bold())
+                        .foregroundStyle(.white)
+                }
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 14) {
+                        ForEach(movies) { movie in
+                            NavigationLink {
+                                MovieDetailsView(movie: movie)
+                            } label: {
+                                MoviePosterCard(movie: movie)
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -133,7 +153,9 @@ struct MoviePosterCard: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
             AsyncImage(url: movie.posterURL) { image in
-                image.resizable().scaledToFill()
+                image
+                    .resizable()
+                    .scaledToFill()
             } placeholder: {
                 Color.white.opacity(0.08)
             }
