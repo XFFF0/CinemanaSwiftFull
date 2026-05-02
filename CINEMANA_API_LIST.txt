@@ -1,0 +1,33 @@
+BASE:
+https://cinemana.shabakaty.cc/api/android/
+
+Home:
+GET /banner/level/0
+GET /videoGroups/lang/ar/level/0
+GET /newlyVideosItems/level/0/offset/0
+GET /collectionsId
+GET /getCollection/collectionID/{id}
+GET /collectionVideos/collectionID/{id}
+GET /videoListPagination/groupID/{id}
+
+Search:
+GET /AdvancedSearch?type={movie|series|all}&videoTitle={query}&year=1900,2026
+GET /AvailableSearchYears
+GET /category
+GET /categories
+
+Details:
+GET /allVideoInfo/id/{movieId}
+GET /staff/actorID/{actorId}
+GET /videoSeason/id/{seriesId}
+GET /highlightEpisode
+
+Watch:
+GET /transcoddedFiles/id/{movieId}
+GET /translationFiles/id/{movieId}
+GET /memberCheckVideoStatus/id/{movieId}
+GET /checkVideoParentalLevel/{movieId}
+
+Other:
+GET https://updates.shabakaty.cc/api/apps/3
+GET https://recommend.shabakaty.cc/api/recommendation/recommend?MovieId={id}&MovieName={name}&ReProcessIfExpired=true
