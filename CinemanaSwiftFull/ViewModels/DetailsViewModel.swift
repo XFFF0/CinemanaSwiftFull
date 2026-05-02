@@ -11,20 +11,20 @@ final class DetailsViewModel: ObservableObject {
 
     func load(movie: Movie) async {
         let movieId = movie.id
+
         isLoading = true
         errorMessage = nil
-
-        async let detailsTask = CinemaService.shared.fetchDetails(movieId: movieId)
-        async let videosTask = CinemaService.shared.fetchVideos(movieId: movieId)
-        async let subtitlesTask = CinemaService.shared.fetchSubtitles(movieId: movieId)
-        async let recTask = CinemaService.shared.fetchRecommendations(movieId: movieId, movieName: movie.title)
+        details = movie
 
         do {
-            details = (try? await detailsTask) ?? movie
-            videos = (try? await videosTask) ?? []
-            subtitles = (try? await subtitlesTask) ?? []
-            recommendations = (try? await recTask) ?? []
+            videos = try await CinemaService.shared.fetchVideos(movieId: movieId)
+        } catch {
+            errorMessage = "فشل جلب روابط المشاهدة: \(error.localizedDescription)"
+            videos = []
         }
+
+        subtitles = (try? await CinemaService.shared.fetchSubtitles(movieId: movieId)) ?? []
+        recommendations = (try? await CinemaService.shared.fetchRecommendations(movieId: movieId, movieName: movie.title)) ?? []
 
         isLoading = false
     }
